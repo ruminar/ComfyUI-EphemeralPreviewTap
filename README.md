@@ -57,6 +57,9 @@ Face Fix / Hand Fix / Upscale / Save
   - まあ、ファイルを出力したり下流画像に変更を加えたりの副作用もなく、
   本当にプレビュー機能だけなので、Bypassする必要も無いかもじゃがな・・・
 
+<img width="582" height="596" alt="image" src="https://github.com/user-attachments/assets/f26a5744-e6a3-42b4-9988-41a2d3c661bc" />
+
+
 ## 注意事項
 
 - プレビューは一時的なものです：画像がノードを通過する際に更新されますが、ページのリロード後は復元されません。
@@ -65,4 +68,4 @@ Face Fix / Hand Fix / Upscale / Save
 
 ## 宣伝画像
 
-（後で入れる）
+<img width="1055" height="1491" alt="EphemeralPreviewTap宣伝画像" src="https://github.com/user-attachments/assets/4ad58d36-4980-466f-b8a4-07da024aba13" />
