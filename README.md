@@ -1,42 +1,68 @@
 # Ephemeral Preview Tap
 
-A lightweight ComfyUI custom node that previews incoming `IMAGE` batches as a temporary contact sheet.
+　おぬしは夜間バッチ実行時に、
 
-## Features
+- プロンプトをミスっていたのを夜間バッチの実行後の翌朝に気が付いたり、
+- tempディレクトリのプレビュー画像を要らんなあと思いながら毎回削除したり、
+- バッチ実行時にプレビュー確認してからわざわざBypassを切り替えたりしてはおらんか？
 
-- Accepts `IMAGE` and passes it through unchanged.
-- Builds a contact sheet from the current batch.
-- Sends the preview only to the current executing client.
-- Does **not** save anything to ComfyUI temp/output folders.
-- Uses fixed settings for simplicity:
-  - JPEG quality: **82**
+　そんな小さな面倒ごとを解決するために、プレビュー画像をtempに出力しない、軽量な画像プレビューノードを用意したぞ。
+
+## 特徴
+
+- `IMAGE` を受け取り、変更を加えずそのまま通過させるのじゃ。
+- 画像は縦横それぞれ半分のサイズに縮小してプレビューするぞ。
+  - 巨大画像が渡されたときは、長辺側は最大でも512pxに制限するようになっておる。
+- 複数の画像が渡された場合は、1枚のコンタクトシートに、正方形に近くなるように敷き詰められるぞ。
+  - 最大64枚の画像まで有効じゃ。
+- プレビューは現在実行中のクライアントにのみ送信する仕様じゃ。
+- ComfyUI の temp/output フォルダには何も**保存しない**ことに注意じゃ。
+  - 画像を正式に保存したい場合は `Save Image` を、ComfyUI標準のプレビュー履歴として残したい場合は `Preview Image` を、それぞれ使っておくれなのじゃ。
+- **カスタマイズ項目は一切なし**のシンプル仕様じゃ。
+  - JPEG quality: **80**
+  - JPEG optimize: **false**
   - Gap: **6**
   - Max images: **64**
-  - Tile size: **half of each source image**
-  - Grid layout: chosen automatically to approach a square, using tile aspect ratio.
+  - タイルサイズ: **元画像の50%**
+    - ただし長辺は最大512px
+  - グリッド配置: **画像の縦横比を考慮して、全体が正方形に近くなるよう自動配置**
 
-## Installation
+このあたりのパラメータを変更したい場合は、直接ソースを修正しておくれなのじゃ。
 
-Copy this folder into your `ComfyUI/custom_nodes/` directory and restart ComfyUI.
+## 導入方法
 
-## Usage
+ComfyUIの `custom_nodes` ディレクトリで、以下のコマンドを打ち込むのじゃ！
 
-Place the node inline where you want to inspect the image stream:
+```bash
+git clone https://github.com/ruminar/ComfyUI-EphemeralPreviewTap.git
+```
+
+## 使い方
+
+プレビュー画像を確認したい場所に、このノードを差し込むのじゃ。<br/>
+枝分かれさせると、本線側の処理がすべて終わった後にプレビューが表示される場合があるため、確認したい処理の直後に挟む使い方を想定しておる。
 
 ```text
 KSampler
   ↓
 VAE Decode
   ↓
-Ephemeral Preview Tap
+Ephemeral Preview Tap (以降の処理の前にプレビューされる)
   ↓
 Face Fix / Hand Fix / Upscale / Save
 ```
 
-The node previews the image batch while passing the original `IMAGE` downstream unchanged.
+- もちろん下流に流される `IMAGE` には一切手を加えないから安心しておくれ。
+  - ちなみに、この簡易プレビューをBypassしていても、`IMAGE` はちゃんと下流に流れるからそれも安心じゃ。
+  - まあ、ファイルを出力したり下流画像に変更を加えたりの副作用もなく、
+  本当にプレビュー機能だけなので、Bypassする必要も無いかもじゃがな・・・
 
-## Notes
+## 注意事項
 
-- The preview is ephemeral: it updates when images pass through the node and is not restored after page reload.
-- For large batches, only the first **64** images are shown.
-- The preview image is scaled in the node UI to fit the node width, with a large height cap for zoomed inspection.
+- プレビューは一時的なものです：画像がノードを通過する際に更新されますが、ページのリロード後は復元されません。
+- 大きなバッチの場合、最初の **64** 枚の画像のみが表示されます。それ以上の画像が渡されても、警告などの表示はありません。
+- プレビュー画像は、ノードの幅に合わせてノード UI 内でスケーリングされ、拡大表示用に高さの制限が広く設定されています。
+
+## 宣伝画像
+
+（後で入れる）
